@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LegalEagle AI</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f6f7f9;
+      color: #172033;
+    }
+    body {
+      margin: 0;
+      padding: 32px;
+    }
+    main {
+      max-width: 920px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 18px;
+      font-size: 28px;
+      font-weight: 680;
+    }
+    textarea {
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 120px;
+      resize: vertical;
+      border: 1px solid #c8ced8;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 16px;
+      line-height: 1.6;
+      background: #fff;
+      color: #172033;
+    }
+    .bar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 14px 0 18px;
+    }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 650;
+      background: #1955d6;
+      color: white;
+      cursor: pointer;
+    }
+    button:disabled {
+      opacity: 0.55;
+      cursor: wait;
+    }
+    #status {
+      font-size: 14px;
+      color: #5d687a;
+    }
+    #answer {
+      box-sizing: border-box;
+      min-height: 300px;
+      border: 1px solid #d9dee7;
+      border-radius: 8px;
+      padding: 18px;
+      background: #fff;
+      white-space: pre-wrap;
+      line-height: 1.7;
+      font-size: 15px;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>LegalEagle AI</h1>
+    <textarea id="question" placeholder="请输入法律咨询问题，例如：劳动者被拖欠工资怎么办？"></textarea>
+    <div class="bar">
+      <button id="ask">提交咨询</button>
+      <span id="status">就绪</span>
+    </div>
+    <section id="answer"></section>
+  </main>
+  <script>
+    const question = document.getElementById("question");
+    const answer = document.getElementById("answer");
+    const statusText = document.getElementById("status");
+    const askButton = document.getElementById("ask");
+
+    async function ask() {
+      const text = question.value.trim();
+      if (!text) {
+        statusText.textContent = "请输入问题";
+        return;
+      }
+      askButton.disabled = true;
+      statusText.textContent = "检索法规并生成回答中...";
+      answer.textContent = "";
+      try {
+        const response = await fetch("/api/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: text })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.error || "请求失败");
+        answer.textContent = data.answer;
+        statusText.textContent = "完成";
+      } catch (error) {
+        answer.textContent = error.message;
+        statusText.textContent = "失败";
+      } finally {
+        askButton.disabled = false;
+      }
+    }
+
+    askButton.addEventListener("click", ask);
+  </script>
+</body>
+</html>
