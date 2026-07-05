@@ -9,11 +9,13 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 load_dotenv(PROJECT_ROOT / ".env", override=True)
 
 DATA_DIR = PROJECT_ROOT / "data"
+CONFIG_DIR = PROJECT_ROOT / "config"
 RAW_NPC_DIR = DATA_DIR / "raw" / "npc"
 PROCESSED_DIR = DATA_DIR / "processed"
 CHROMA_DIR = DATA_DIR / "index" / "chroma"
 CHUNKS_PATH = PROCESSED_DIR / "chunks.jsonl"
 LAWS_PATH = PROCESSED_DIR / "laws.jsonl"
+QUERY_EXPANSIONS_PATH = CONFIG_DIR / "legal_query_expansions.json"
 
 DEFAULT_AGENT_MODEL = os.getenv("LEGAL_AGENT_MODEL", "gpt-5.4-mini")
 DEFAULT_EMBEDDING_MODEL = os.getenv("LEGAL_EMBEDDING_MODEL", "Qwen/Qwen3-Embedding-0.6B")
